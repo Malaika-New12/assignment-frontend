@@ -3,7 +3,7 @@ import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa';
 
 const Footer = () => {
     return (
-        <footer className="glass" style={{ marginTop: '4rem', borderRadius: '16px 16px 0 0', borderBottom: 'none' }}>
+        <footer id="contact" className="glass" style={{ marginTop: '4rem', borderRadius: '16px 16px 0 0', borderBottom: 'none' }}>
             <div className="container section" style={{ padding: '3rem 2rem' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem' }}>
 

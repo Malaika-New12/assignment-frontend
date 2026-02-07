@@ -39,7 +39,15 @@ body {
 }
 
 .glass-card {
-  @extend .glass; /* Conceptually, but in CSS modules we use classes */
+  /* Inherited from .glass */
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius);
+
+  /* Card specific */
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.6);
@@ -88,28 +96,103 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: #0f172a;
   line-height: 1.2;
   margin-bottom: 1rem;
 }
 
-h1 { font-size: 3.5rem; font-weight: 700; }
-h2 { font-size: 2.5rem; font-weight: 600; }
-h3 { font-size: 1.5rem; font-weight: 600; }
+h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+}
+
+h2 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
 
 p {
   color: var(--text-muted);
   margin-bottom: 1rem;
+  font-size: clamp(1rem, 1.1vw, 1.15rem);
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
 }
 
 /* Layout */
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 1.5rem;
 }
 
 .section {
-  padding: 5rem 0;
+  padding: 4rem 0;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 3rem 0;
+  }
 }

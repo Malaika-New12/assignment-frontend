@@ -43,34 +43,21 @@ const Hero = () => {
                         </span>
                     </motion.div>
 
-                    <motion.h1 variants={itemVariants} style={{ marginBottom: '1.5rem' }}>
-                        Your Health Is Our <span style={{ color: 'var(--primary)' }}>Top Priority</span>
+                    <motion.h1 variants={itemVariants} style={{ marginBottom: '1.5rem', lineHeight: '1.1' }}>
+                        Your Health Is Our <br /> <span className="text-gradient">Top Priority</span>
                     </motion.h1>
 
-                    <motion.p variants={itemVariants} style={{ fontSize: '1.1rem', marginBottom: '2.5rem' }}>
-                        Connect with top-tier medical professionals anytime, anywhere. Experience modern healthcare with our advanced digital platform designed for your well-being.
-                    </motion.p>
-
-                    <motion.div variants={itemVariants} style={{ display: 'flex', gap: '1rem' }}>
-                        <button className="btn btn-primary" onClick={() => navigate('/register')} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <FaCalendarCheck /> Book Appointment
-                        </button>
-                        <button className="btn btn-outline" onClick={() => document.getElementById('services').scrollIntoView({ behavior: 'smooth' })} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <FaUserMd /> Find Doctors
-                        </button>
-                    </motion.div>
-
-                    <motion.div variants={itemVariants} style={{ marginTop: '3rem', display: 'flex', gap: '3rem' }}>
+                    <motion.div variants={itemVariants} style={{ marginTop: '3rem', display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
                         <div>
-                            <h3 style={{ margin: 0, color: 'var(--primary)' }}>24/7</h3>
+                            <h3 style={{ margin: 0 }} className="text-gradient">24/7</h3>
                             <p style={{ margin: 0, fontSize: '0.9rem' }}>Online Support</p>
                         </div>
                         <div>
-                            <h3 style={{ margin: 0, color: 'var(--primary)' }}>100+</h3>
+                            <h3 style={{ margin: 0 }} className="text-gradient">100+</h3>
                             <p style={{ margin: 0, fontSize: '0.9rem' }}>Specialist Doctors</p>
                         </div>
                         <div>
-                            <h3 style={{ margin: 0, color: 'var(--primary)' }}>1M+</h3>
+                            <h3 style={{ margin: 0 }} className="text-gradient">1M+</h3>
                             <p style={{ margin: 0, fontSize: '0.9rem' }}>Active Patients</p>
                         </div>
                     </motion.div>
@@ -82,46 +69,33 @@ const Hero = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
                     className="hero-image-container"
-                    style={{ display: 'flex', justifyContent: 'center' }}
+                    style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}
                 >
-                    <div className="glass-card" style={{ padding: '1rem', transform: 'rotate(-3deg)' }}>
+                    <div className="glass-card animate-float" style={{ padding: '0.8rem', transform: 'rotate(-3deg)', border: '1px solid rgba(255,255,255,0.8)' }}>
                         <img
                             src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
                             alt="Doctor"
-                            style={{ borderRadius: '16px', maxWidth: '100%', height: 'auto', display: 'block' }}
+                            style={{ borderRadius: '16px', maxWidth: '100%', height: 'auto', display: 'block', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
                         />
                     </div>
-                    {/* Floating Elements */}
-                    <motion.div
-                        animate={{ y: [0, -20, 0] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        className="glass"
-                        style={{
-                            position: 'absolute',
-                            bottom: '10%',
-                            right: '10%',
-                            padding: '1rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.8rem',
-                            zIndex: 2
-                        }}
-                    >
-                        <div style={{ background: '#dcfce7', padding: '0.5rem', borderRadius: '50%', color: '#16a34a' }}>
-                            <FaCalendarCheck />
-                        </div>
-                        <div>
-                            <h6 style={{ margin: 0, fontSize: '0.9rem' }}>Appointment</h6>
-                            <span style={{ fontSize: '0.8rem', color: '#16a34a' }}>Confirmed</span>
-                        </div>
-                    </motion.div>
                 </motion.div>
             </div>
 
             <style>{`
         @media (max-width: 968px) {
-          .container { grid-template-columns: 1fr !important; text-align: center; }
-          .hero-image-container { display: none !important; } /* Hide on mobile to focus on CTA */
+          .container { 
+            grid-template-columns: 1fr !important; 
+            text-align: center; 
+            padding-bottom: 2rem;
+          }
+          .hero-image-container { 
+            order: -1; 
+            margin-bottom: 2rem;
+          }
+          .glass-card {
+            max-width: 80%;
+            margin: 0 auto;
+          }
         }
       `}</style>
         </section>
