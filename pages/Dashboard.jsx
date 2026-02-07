@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+import API_URL from '../config';
+
 const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +15,7 @@ const Dashboard = () => {
     setError('');
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/users', {
+      const res = await axios.get(`${API_URL}/api/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(res.data);
@@ -65,7 +67,7 @@ const Dashboard = () => {
                 <tr key={user._id}>
                   <td>
                     <img
-                      src={`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(user.username || 'user'+idx)}`}
+                      src={`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(user.username || 'user' + idx)}`}
                       alt="avatar"
                       className="user-avatar"
                     />
