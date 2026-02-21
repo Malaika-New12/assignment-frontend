@@ -7,13 +7,13 @@ import { FaUser, FaEnvelope, FaLock, FaCamera } from "react-icons/fa";
 
 const Register = () => {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [file, setFile] = useState(null); // Cloudinary ke liye image file
+  const [preview, setPreview] = useState(null); // Screen par dikhane ke liye
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Cleanup for image preview memory to prevent browser lag
+  // Preview memory saaf karne ke liye
   useEffect(() => {
     return () => {
       if (preview) URL.revokeObjectURL(preview);
@@ -23,37 +23,35 @@ const Register = () => {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
+  // --- IMAGE SELECTION LOGIC ---
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile)); // Creates local preview link
+      setFile(selectedFile); // 1. File state mein save ki
+      setPreview(URL.createObjectURL(selectedFile)); // 2. Preview dikhaya
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
     if (!form.username || !form.email || !form.password)
       return setError("All fields are required");
 
     setLoading(true);
 
-    // --- CLOUDINARY UPLOAD PREPARATION ---
-    // We use FormData because we are sending a physical file (image)
+    // --- CLOUDINARY DATA PREPARATION ---
     const formData = new FormData();
     formData.append("username", form.username);
     formData.append("email", form.email);
     formData.append("password", form.password);
 
-    // This "image" key MUST match your backend upload.single("image")
+    // "image" key aapke backend upload.single("image") se match karni chahiye
     if (file) {
       formData.append("image", file);
     }
 
     try {
-      // Sending data with multipart/form-data header
       await axios.post(`${API_URL}/api/auth/register`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -66,33 +64,20 @@ const Register = () => {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "relative",
-        background: "#f1f5f9",
-      }}
-    >
-      {/* Background Blobs (Identical to your Login design) */}
+    <div className="min-h-screen flex items-center justify-center relative bg-[#f1f5f9]">
+      {/* Background Blobs */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
       </div>
 
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
         className="glass-card"
         style={{
           width: "100%",
           maxWidth: "400px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "1.2rem",
           padding: "2.5rem 2rem",
           background: "rgba(255, 255, 255, 0.7)",
           backdropFilter: "blur(10px)",
@@ -102,7 +87,7 @@ const Register = () => {
         }}
       >
         <div style={{ textAlign: "center" }}>
-          {/* Circular Image Upload Section */}
+          {/* --- UPLOAD IMAGE OPTION (AVATAR + CAMERA) --- */}
           <div
             style={{
               width: "100px",
@@ -113,16 +98,15 @@ const Register = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
               position: "relative",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
               border: "3px solid white",
             }}
           >
-            {/* Fallback to initials if no image is selected */}
             <img
               src={
                 preview ||
-                `https://api.dicebear.com/7.x/initials/svg?seed=${form.username || "User"}`
+                `https://api.dicebear.com/7.x/initials/svg?seed=${form.username || "US"}`
               }
               alt="Preview"
               style={{
@@ -132,7 +116,7 @@ const Register = () => {
                 objectFit: "cover",
               }}
             />
-            {/* The Camera Icon triggers the hidden file input */}
+            {/* Yeh blue camera icon hi aapka "Upload" button hai */}
             <label
               style={{
                 position: "absolute",
@@ -152,17 +136,11 @@ const Register = () => {
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
-                style={{ display: "none" }}
+                style={{ display: "none" }} // Real input ko hide kiya design ke liye
               />
             </label>
           </div>
-          <h2
-            style={{
-              color: "#1e40af",
-              marginBottom: "0.2rem",
-              fontWeight: "bold",
-            }}
-          >
+          <h2 style={{ color: "#1e40af", fontWeight: "bold" }}>
             Create Account
           </h2>
           <p style={{ fontSize: "0.85rem", color: "#64748b" }}>
@@ -179,7 +157,7 @@ const Register = () => {
               borderRadius: "12px",
               textAlign: "center",
               fontSize: "0.8rem",
-              border: "1px solid #fecaca",
+              marginTop: "10px",
             }}
           >
             {error}
@@ -188,9 +166,13 @@ const Register = () => {
 
         <form
           onSubmit={handleSubmit}
-          style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "1.2rem",
+            marginTop: "15px",
+          }}
         >
-          {/* Username */}
           <div style={{ position: "relative" }}>
             <FaUser
               style={{
@@ -212,12 +194,10 @@ const Register = () => {
                 borderRadius: "50px",
                 border: "1px solid #e2e8f0",
                 outline: "none",
-                background: "rgba(255,255,255,0.8)",
               }}
             />
           </div>
 
-          {/* Email */}
           <div style={{ position: "relative" }}>
             <FaEnvelope
               style={{
@@ -239,12 +219,10 @@ const Register = () => {
                 borderRadius: "50px",
                 border: "1px solid #e2e8f0",
                 outline: "none",
-                background: "rgba(255,255,255,0.8)",
               }}
             />
           </div>
 
-          {/* Password */}
           <div style={{ position: "relative" }}>
             <FaLock
               style={{
@@ -266,7 +244,6 @@ const Register = () => {
                 borderRadius: "50px",
                 border: "1px solid #e2e8f0",
                 outline: "none",
-                background: "rgba(255,255,255,0.8)",
               }}
             />
           </div>
@@ -275,15 +252,13 @@ const Register = () => {
             type="submit"
             disabled={loading}
             style={{
-              marginTop: "0.5rem",
               background: "#2563eb",
               color: "white",
               padding: "0.9rem",
               borderRadius: "50px",
               border: "none",
               fontWeight: "600",
-              cursor: loading ? "not-allowed" : "pointer",
-              boxShadow: "0 10px 15px -3px rgba(37, 99, 235, 0.3)",
+              cursor: "pointer",
             }}
           >
             {loading ? "Registering..." : "Register Now"}
@@ -291,7 +266,7 @@ const Register = () => {
         </form>
 
         <p
-          style={{ textAlign: "center", fontSize: "0.9rem", color: "#475569" }}
+          style={{ textAlign: "center", fontSize: "0.9rem", marginTop: "15px" }}
         >
           Already have an account?{" "}
           <Link
