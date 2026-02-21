@@ -165,7 +165,7 @@ const Dashboard = () => {
             <img
               src={
                 localStorage.getItem("userImg") ||
-                "https://api.dicebear.com/7.x/initials/svg?seed=Doctor"
+                `https://api.dicebear.com/7.x/initials/svg?seed=${localStorage.getItem("username") || "User"}`
               }
               alt="Profile"
               style={{
