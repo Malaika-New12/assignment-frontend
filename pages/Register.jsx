@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import API_URL from "../config";
 import { motion } from "framer-motion";
-import { FaUser, FaEnvelope, FaLock, FaCamera, FaUserMd } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaLock, FaCamera } from "react-icons/fa";
 
 const Register = () => {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
@@ -13,7 +13,7 @@ const Register = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Memory cleanup for the local preview URL
+  // Cleanup for image preview memory to prevent browser lag
   useEffect(() => {
     return () => {
       if (preview) URL.revokeObjectURL(preview);
@@ -27,7 +27,7 @@ const Register = () => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile)); // Local preview before upload
+      setPreview(URL.createObjectURL(selectedFile)); // Creates local preview link
     }
   };
 
@@ -40,7 +40,8 @@ const Register = () => {
 
     setLoading(true);
 
-    // --- CLOUDINARY UPLOAD SETUP ---
+    // --- CLOUDINARY UPLOAD PREPARATION ---
+    // We use FormData because we are sending a physical file (image)
     const formData = new FormData();
     formData.append("username", form.username);
     formData.append("email", form.email);
@@ -52,6 +53,7 @@ const Register = () => {
     }
 
     try {
+      // Sending data with multipart/form-data header
       await axios.post(`${API_URL}/api/auth/register`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -74,7 +76,7 @@ const Register = () => {
         background: "#f1f5f9",
       }}
     >
-      {/* Background Blobs (Matching Login Design) */}
+      {/* Background Blobs (Identical to your Login design) */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
@@ -100,7 +102,7 @@ const Register = () => {
         }}
       >
         <div style={{ textAlign: "center" }}>
-          {/* Circular Image Upload Setup */}
+          {/* Circular Image Upload Section */}
           <div
             style={{
               width: "100px",
@@ -116,6 +118,7 @@ const Register = () => {
               border: "3px solid white",
             }}
           >
+            {/* Fallback to initials if no image is selected */}
             <img
               src={
                 preview ||
@@ -129,6 +132,7 @@ const Register = () => {
                 objectFit: "cover",
               }}
             />
+            {/* The Camera Icon triggers the hidden file input */}
             <label
               style={{
                 position: "absolute",
@@ -186,7 +190,7 @@ const Register = () => {
           onSubmit={handleSubmit}
           style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}
         >
-          {/* Username Input */}
+          {/* Username */}
           <div style={{ position: "relative" }}>
             <FaUser
               style={{
@@ -213,7 +217,7 @@ const Register = () => {
             />
           </div>
 
-          {/* Email Input */}
+          {/* Email */}
           <div style={{ position: "relative" }}>
             <FaEnvelope
               style={{
@@ -240,7 +244,7 @@ const Register = () => {
             />
           </div>
 
-          {/* Password Input */}
+          {/* Password */}
           <div style={{ position: "relative" }}>
             <FaLock
               style={{
