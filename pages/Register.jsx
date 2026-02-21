@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import API_URL from "../config";
@@ -14,20 +14,26 @@ import {
 const Register = () => {
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null); // State for image preview
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Clean up memory for the preview URL
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  // Handle File Selection and Preview
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile)); // Create local URL for preview
+      setPreview(URL.createObjectURL(selectedFile));
     }
   };
 
@@ -35,19 +41,19 @@ const Register = () => {
     e.preventDefault();
     setError("");
 
-    if (!form.username || !form.email || !form.password)
+    if (!form.username || !form.email || !form.password) {
       return setError("All fields are required");
+    }
 
     setLoading(true);
 
-    // --- CLOUDINARY UPLOAD LOGIC ---
-    // Create FormData to send binary file + text data
+    // FormData is required to send the file to Cloudinary via your Backend
     const formData = new FormData();
     formData.append("username", form.username);
     formData.append("email", form.email);
     formData.append("password", form.password);
 
-    // Important: Key "image" must match backend upload.single("image")
+    // Ensure "image" matches your backend upload.single("image")
     if (file) {
       formData.append("image", file);
     }
@@ -65,115 +71,107 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 to-indigo-100 relative">
-      {/* Background Blobs for Glassmorphism effect */}
-      <div className="absolute top-20 left-20 w-64 h-64 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
-      <div className="absolute bottom-20 right-20 w-64 h-64 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+    <div className="min-h-screen flex items-center justify-center p-6 bg-[#f8fafc] relative overflow-hidden">
+      {/* Decorative Background Elements */}
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-50"></div>
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-100 rounded-full blur-3xl opacity-50"></div>
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="glass-card max-w-md w-full p-8 shadow-2xl backdrop-blur-md bg-white/70 border border-white/20 rounded-3xl"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative z-10 w-full max-w-md p-8 bg-white/80 backdrop-blur-xl border border-white rounded-[2rem] shadow-2xl"
       >
-        <div className="flex flex-col items-center mb-6">
-          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white mb-4 shadow-lg">
-            <FaUserPlus size={30} />
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-blue-600 rounded-2xl text-white shadow-lg shadow-blue-200">
+            <FaUserPlus size={28} />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-800">
-            Create Account
-          </h2>
-          <p className="text-gray-500 text-sm mt-1">Join MediCare today</p>
+          <h2 className="text-3xl font-bold text-gray-900">Get Started</h2>
+          <p className="text-gray-500 mt-2">Create your MediCare account</p>
         </div>
 
         {error && (
-          <motion.div
-            initial={{ x: -10 }}
-            animate={{ x: 0 }}
-            className="bg-red-100 text-red-600 p-3 rounded-xl mb-4 text-center text-sm font-medium border border-red-200"
-          >
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded-r-lg">
             {error}
-          </motion.div>
+          </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          {/* Profile Image Upload with Preview */}
-          <div className="flex flex-col items-center gap-3 mb-2">
-            <div className="relative w-24 h-24 group">
-              <img
-                src={
-                  preview ||
-                  "https://api.dicebear.com/7.x/initials/svg?seed=User"
-                }
-                alt="Preview"
-                className="w-full h-full rounded-full object-cover border-4 border-white shadow-md transition group-hover:opacity-80"
-              />
-              <label className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full text-white cursor-pointer shadow-lg hover:bg-blue-700 transition">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Enhanced Profile Image Picker */}
+          <div className="flex flex-col items-center mb-4">
+            <div className="relative group">
+              <div className="w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100">
+                <img
+                  src={
+                    preview ||
+                    `https://api.dicebear.com/7.x/initials/svg?seed=${form.username || "User"}`
+                  }
+                  className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                  alt="Profile Preview"
+                />
+              </div>
+              <label className="absolute bottom-0 right-0 p-2 bg-blue-600 rounded-full text-white cursor-pointer shadow-lg hover:bg-blue-700 transition-colors">
                 <FaCamera size={14} />
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={handleFileChange}
                   className="hidden"
+                  onChange={handleFileChange}
                 />
               </label>
             </div>
-            <span className="text-xs text-gray-400 font-medium">
-              Upload Profile Photo
+            <span className="mt-2 text-[10px] uppercase tracking-wider text-gray-400 font-bold">
+              Profile Photo
             </span>
           </div>
 
-          {/* Username Input */}
-          <div className="relative">
-            <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              name="username"
-              placeholder="Username"
-              required
-              onChange={handleChange}
-              className="w-full p-3 pl-12 rounded-2xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white/50"
-            />
-          </div>
+          <div className="space-y-4">
+            <div className="relative">
+              <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                name="username"
+                placeholder="Full Name"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none"
+                onChange={handleChange}
+              />
+            </div>
 
-          {/* Email Input */}
-          <div className="relative">
-            <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              required
-              onChange={handleChange}
-              className="w-full p-3 pl-12 rounded-2xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white/50"
-            />
-          </div>
+            <div className="relative">
+              <FaEnvelope className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none"
+                onChange={handleChange}
+              />
+            </div>
 
-          {/* Password Input */}
-          <div className="relative">
-            <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              required
-              onChange={handleChange}
-              className="w-full p-3 pl-12 rounded-2xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition bg-white/50"
-            />
+            <div className="relative">
+              <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none"
+                onChange={handleChange}
+              />
+            </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-4 rounded-2xl shadow-xl shadow-blue-200 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold rounded-2xl shadow-lg shadow-blue-100 transition-all active:scale-[0.98]"
           >
-            {loading ? "Creating Account..." : "Register Now"}
+            {loading ? "Processing..." : "Create Account"}
           </button>
         </form>
 
-        <p className="text-center mt-6 text-sm text-gray-600">
+        <p className="mt-8 text-center text-sm text-gray-600">
           Already have an account?{" "}
           <Link to="/login" className="text-blue-600 font-bold hover:underline">
-            Login
+            Log in here
           </Link>
         </p>
       </motion.div>
